@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block nav %}
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('home_no_logeado') }}">Inicio</a></li>
+            <li><a href="{{ url_for('ver_examenes') }}">Ver Exámenes</a></li>
+            <li><a href="{{ url_for('ver_categorias') }}">Ver Categorías</a></li>
+            <li><a href="{{ url_for('ver_indicaciones') }}">Ver Indicaciones</a></li>
+        </ul>
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+    <h2>Bienvenido</h2>
+    <p>Por favor, inicia sesión para continuar.</p>
+    <p><a href="{{ url_for('login') }}">Iniciar Sesión</a> | <a href="{{ url_for('register') }}">Registrarse</a></p>
+{% endblock %}

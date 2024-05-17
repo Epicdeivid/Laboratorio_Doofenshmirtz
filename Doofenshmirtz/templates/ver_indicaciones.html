@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h2>Lista de Indicaciones</h2>
+    <p><a href="{{ url_for('crear_indicacion') }}">Crear Nueva Indicación</a></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for indicacion in indicaciones %}
+                <tr>
+                    <td>{{ indicacion.nombre }}</td>
+                    <td>{{ indicacion.descripcion }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_indicacion', indicacion_id=indicacion['_id']) }}">Editar</a>
+                        <form action="{{ url_for('eliminar_indicacion', indicacion_id=indicacion['_id']) }}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta indicación?');">
+                            <button type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

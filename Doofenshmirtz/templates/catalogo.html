@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h2>Catálogo</h2>
+    <div class="container">
+        <h3>Lista de Exámenes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Categoría</th>
+                    <th>Tipo de Muestra</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for examen in examenes %}
+                    <tr>
+                        <td>{{ examen.codigo }}</td>
+                        <td>{{ examen.categoria }}</td>
+                        <td>{{ examen.tipo_muestra }}</td>
+                        <td>{{ examen.precio }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

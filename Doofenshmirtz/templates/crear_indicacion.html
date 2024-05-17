@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h2>Crear Nueva Indicación</h2>
+    <div class="container">
+        <form action="{{ url_for('crear_indicacion') }}" method="post">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" required></textarea>
+            <button type="submit">Crear Indicación</button>
+        </form>
+    </div>
+{% endblock %}

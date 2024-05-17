@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Doofenshmirtz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Laboratorio Doofenshmirtz</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Inicio</a></li>
+                <li><a href="{{ url_for('catalogo') }}">Catálogo</a></li>
+                <li><a href="{{ url_for('reporte') }}">Reporte</a></li>
+                <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+                <li><a href="{{ url_for('ver_examenes') }}">Ver Exámenes</a></li>
+                <li><a href="{{ url_for('ver_categorias') }}">Ver Categorías</a></li>
+                <li><a href="{{ url_for('ver_indicaciones') }}">Ver Indicaciones</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

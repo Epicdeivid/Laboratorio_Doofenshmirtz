@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h2>Editar Examen</h2>
+    <div class="container">
+        <form action="{{ url_for('editar_examen', examen_id=examen['_id']) }}" method="post">
+            <label for="codigo">Código:</label>
+            <input type="text" id="codigo" name="codigo" value="{{ examen.codigo }}" required>
+            <label for="categoria">Categoría:</label>
+            <select id="categoria" name="categoria" required>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.nombre }}" {% if categoria.nombre == examen.categoria %} selected {% endif %}>{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+            <label for="tipo_muestra">Tipo de Muestra:</label>
+            <input type="text" id="tipo_muestra" name="tipo_muestra" value="{{ examen.tipo_muestra }}" required>
+            <label for="precio">Precio:</label>
+            <input type="number" id="precio" name="precio" value="{{ examen.precio }}" required>
+            <label for="indicaciones">Indicaciones:</label>
+            <select id="indicaciones" name="indicaciones" multiple required>
+                {% for indicacion in indicaciones %}
+                    <option value="{{ indicacion.nombre }}" {% if indicacion.nombre in examen.indicaciones %} selected {% endif %}>{{ indicacion.nombre }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Guardar Cambios</button>
+        </form>
+    </div>
+{% endblock %}

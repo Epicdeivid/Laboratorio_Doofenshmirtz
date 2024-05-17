@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h2>Reporte</h2>
+    <div class="container">
+        <h3>Reporte de Laboratorio</h3>
+        <p>Cantidad de exámenes registrados en cada categoría:</p>
+        <ul>
+            {% for categoria, cantidad in reporte_categorias.items() %}
+                <li>{{ categoria }}: {{ cantidad }}</li>
+            {% endfor %}
+        </ul>
+        <p>Indicación de examen más común: {{ indicacion_comun }}</p>
+        <p>Lista de exámenes agrupados por precio:</p>
+        <ul>
+            <li>1 - 100 Bs: {{ precios[0] }}</li>
+            <li>101 - 200 Bs: {{ precios[1] }}</li>
+            <li>201 - 300 Bs: {{ precios[2] }}</li>
+            <li>301 - 500 Bs: {{ precios[3] }}</li>
+            <li>501+ Bs: {{ precios[4] }}</li>
+        </ul>
+    </div>
+{% endblock %}
