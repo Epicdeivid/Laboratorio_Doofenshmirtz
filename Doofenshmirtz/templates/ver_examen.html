@@ -14,14 +14,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for examen in examenes %}
+            {% for examen in exams %}
                 <tr>
                     <td>{{ examen.codigo }}</td>
                     <td>{{ examen.categoria }}</td>
                     <td>{{ examen.tipo_muestra }}</td>
                     <td>{{ examen.precio }}</td>
                     <td>
-                        <a href="{{ url_for('ver_examen', examen_id=examen['_id']) }}">Ver</a>
                         <a href="{{ url_for('editar_examen', examen_id=examen['_id']) }}">Editar</a>
                         <form action="{{ url_for('eliminar_examen', examen_id=examen['_id']) }}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este examen?');">
                             <button type="submit">Eliminar</button>

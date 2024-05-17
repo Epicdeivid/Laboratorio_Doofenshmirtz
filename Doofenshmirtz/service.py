@@ -15,16 +15,18 @@ users_collection = db['users']
 
 # Validar sesión de usuario
 def validar_sesion():
+    print('username' not in session)
     if 'username' not in session:
         flash('Debes iniciar sesión para acceder a esta página', 'error')
         return redirect(url_for('login'))
 
 # Ruta de inicio para usuarios no logeados
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home_no_logeado():
     if 'username' in session:
-        return redirect(url_for('home'))
+        return redirect(url_for('home_logeado'))
     return render_template('home_no_logeado.html')
+
 
 # Rutas para la autenticación
 @app.route('/login', methods=['GET', 'POST'])
@@ -72,6 +74,13 @@ def home_logeado():
     validar_sesion()
     return redirect(url_for('render_layout'))  # Redirige al layout después de iniciar sesión
 
+@app.route('/logout', methods=['GET'])
+def logout():
+    # Elimina la variable de sesión 'username'
+    session.pop('username', None)
+    # Redirige a la página de inicio sin sesión
+    return redirect(url_for('home_no_logeado'))
+
 # Rutas para CRUD de exámenes
 @app.route('/crear_examen', methods=['GET', 'POST'])
 def crear_examen():
@@ -80,7 +89,7 @@ def crear_examen():
         codigo = request.form['codigo']
         categoria = request.form['categoria']
         tipo_muestra = request.form['tipo_muestra']
-        precio = request.form['precio']
+        precio = int(request.form['precio'])
         indicaciones = request.form.getlist('indicaciones')
 
         examen = {
@@ -93,7 +102,7 @@ def crear_examen():
 
         exams_collection.insert_one(examen)
         flash('Examen creado correctamente', 'success')
-        return redirect(url_for('catalogo'))
+        return redirect(url_for('ver_examenes'))
     
     categorias = categories_collection.find()
     indicaciones = indications_collection.find()
@@ -118,7 +127,7 @@ def editar_examen(examen_id):
             "indicaciones": indicaciones
         }})
         flash('Examen actualizado correctamente', 'success')
-        return redirect(url_for('catalogo'))
+        return redirect(url_for('ver_examenes'))
     
     categorias = categories_collection.find()
     indicaciones = indications_collection.find()
@@ -129,14 +138,15 @@ def eliminar_examen(examen_id):
     validar_sesion()
     exams_collection.delete_one({"_id": ObjectId(examen_id)})
     flash('Examen eliminado correctamente', 'success')
-    return redirect(url_for('catalogo'))
+    return redirect(url_for('ver_examenes'))
 
 # Ruta para ver exámenes en forma de tabla
+   
 @app.route('/ver_examenes', methods=['GET'])
 def ver_examenes():
     validar_sesion()
     exams = exams_collection.find()
-    return render_template('ver_examenes.html', exams=exams)
+    return render_template('ver_examen.html', exams=exams)
 
 # Rutas para CRUD de categorías
 @app.route('/crear_categoria', methods=['GET', 'POST'])
@@ -234,16 +244,7 @@ def ver_indicaciones():
 @app.route('/catalogo', methods=['GET'])
 def catalogo():
     validar_sesion()
-    categoria_filtro = request.args.get('categoria')
-    tipo_muestra_filtro = request.args.get('tipo_muestra')
-
-    if categoria_filtro:
-        exams = exams_collection.find({"categoria": categoria_filtro})
-    elif tipo_muestra_filtro:
-        exams = exams_collection.find({"tipo_muestra": tipo_muestra_filtro})
-    else:
-        exams = exams_collection.find()
-
+    exams = exams_collection.find()
     categorias = categories_collection.find()
     return render_template('catalogo.html', exams=exams, categorias=categorias)
 
@@ -254,28 +255,15 @@ def ver_examen(examen_id):
     exam = exams_collection.find_one({"_id": ObjectId(examen_id)})
     return render_template('ver_examen.html', exam=exam)
 
-# Ruta para ver todas las categorías en forma de tabla
-"""@app.route('/ver_categorias', methods=['GET'])
-def ver_categorias():
-    validar_sesion()
-    categorias = categories_collection.find()
-    return render_template('ver_categorias.html', categorias=categorias)
-
-# Ruta para ver todas las indicaciones en forma de tabla
-@app.route('/ver_indicaciones', methods=['GET'])
-def ver_indicaciones():
-    validar_sesion()
-    indicaciones = indications_collection.find()
-    return render_template('ver_indicaciones.html', indicaciones=indicaciones)"""
 
 # Ruta para generar el reporte
 @app.route('/reporte', methods=['GET'])
 def reporte():
     validar_sesion()
     # Obtener el número de exámenes por categoría
-    categories_count = exams_collection.aggregate([
+    categories_count = {doc['_id']: doc['count'] for doc in exams_collection.aggregate([
         {"$group": {"_id": "$categoria", "count": {"$sum": 1}}}
-    ])
+    ])}
     # Obtener la indicación de examen más común
     common_indication = exams_collection.aggregate([
         {"$unwind": "$indicaciones"},
@@ -284,19 +272,21 @@ def reporte():
         {"$limit": 1}
     ])
     # Agrupar exámenes por precio en intervalos
-    price_intervals = exams_collection.aggregate([
-        {"$bucket": {
-            "groupBy": "$precio",
-            "boundaries": [0, 100, 200, 300, 500, float('inf')],
-            "default": "Other",
-            "output": {
-                "count": {"$sum": 1}
-            }
-        }}
-    ])
+    common_indication = list(common_indication)
+    common_indication_name = common_indication[0]['_id'] if common_indication else "No hay datos disponibles"
 
+    print("precioooo" + str(exams_collection.count_documents({"precio": 100})))
+    price_intervals = [
+        exams_collection.count_documents({"precio": {"$lte": 100}}),
+        exams_collection.count_documents({"precio": {"$gt": 100, "$lte": 200}}),
+        exams_collection.count_documents({"precio": {"$gt": 200, "$lte": 300}}),
+        exams_collection.count_documents({"precio": {"$gt": 300, "$lte": 500}}),
+        exams_collection.count_documents({"precio": {"$gt": 500}})
+    ]
     return render_template('reporte.html', categories_count=categories_count,
-                           common_indication=common_indication, price_intervals=price_intervals)
+                           common_indication=common_indication_name, price_intervals=price_intervals)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -11,16 +11,9 @@
         <h1>Laboratorio Doofenshmirtz</h1>
         <nav>
             <ul>
-                <li><a href="{{ url_for('render_layout') }}">Inicio</a></li>
-                <li><a href="{{ url_for('catalogo') }}">Catálogo</a></li>
-                <li><a href="{{ url_for('reporte') }}">Reporte</a></li>
-                <li><a href="{{ url_for('ver_examenes') }}">Ver Exámenes</a></li>
-                <li><a href="{{ url_for('ver_categorias') }}">Ver Categorías</a></li>
-                <li><a href="{{ url_for('ver_indicaciones') }}">Ver Indicaciones</a></li>
-                &nbsp;
-                &nbsp;
-                &nbsp;
-                <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+                <li><a href="{{ url_for('home_no_logeado') }}">Inicio</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Registrarse</a></li>
             </ul>
         </nav>
     </header>
